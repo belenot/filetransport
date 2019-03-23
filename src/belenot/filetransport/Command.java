@@ -1,5 +1,5 @@
 package belenot.filetransport;
 
 public enum Command {
-	CLOSE;
+	CLOSE, NORMAL_RUN;
 }
