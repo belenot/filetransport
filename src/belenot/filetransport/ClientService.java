@@ -28,7 +28,7 @@ public class ClientService implements Runnable {
 	public void run () {
 		System.out.println("Run: " + socket.toString());
 		try {
-			ClientQuery query = new ClientQuery(new InputStreamReader(socket.getInputStream()));
+			ClientQuery query = new ClientQuery(socket.getInputStream());
 			ClientCommand clientCommand = query.getClientCommand();
 			System.out.println("Command is " + clientCommand);
 			switch (query.getClientCommand()) {

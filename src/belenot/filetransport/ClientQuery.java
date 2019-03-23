@@ -6,37 +6,37 @@ import java.util.*;
 
 public class ClientQuery {
 	
-	public ClientQuery(InputStreamReader in)
+	public ClientQuery(InputStream in)
 		throws IllegalArgumentException, IOException {
-		int length = 0;
-		int maxLength = ClientCommand.maxLength();
-		int c;
-		String strCommand = "";
-		
-		while ( (c = in.read()) != -1 && c != 0) {
-			length++;
-			strCommand += c;
-			try {
-				clientCommand = ClientCommand.valueOf(strCommand);
-				break;
-			} catch (IllegalArgumentException exc) { }
+		byte[] bytes = new byte[in.available()];
+		in.read(bytes);
+	    List<String> fields = new LinkedList<>();
+		String field = "";
+		for (byte b : bytes) {
+			if(b == 0) {
+				if(field.equals(""))
+					throw new IllegalArgumentException("Wrong input data, expected field");
+				fields.add(field);
+				field = "";
+			} else {
+				field += (char) b;
+			}
 		}
-		if (length == 0 || length == maxLength && strCommand.equals(""))
-			throw new IllegalArgumentException("Incorrect comand: " + strCommand);
-		while(c != -1) {
-			c = in.read();
-			String key = "";
-			String value = "";
-			while(c != -1 && c != 0)
-				c = in.read();
-				key += c;
-			while(c != -1 && c != 0)
-				c = in.read();				
-				value += c;
-			if (key.equals("") || value.equals(""))
-				throw new IllegalArgumentException("Wrong data format");
-			data.put(key, value);
+		fields.add(field);
+		System.out.println(fields);
+		if(fields.size() == 0)
+			throw new IllegalArgumentException("Null client query");
+		if(fields.size() % 2 == 0)
+			throw new IllegalArgumentException("Incorrect client query, expected value");
+		try {
+			clientCommand = ClientCommand.valueOf(fields.get(0));
+		} catch (IllegalArgumentException exc) {
+			throw new IllegalArgumentException("Incorrect client command");
 		}
+		for(int i = 1; i + 1 < fields.size(); i++) {
+			data.put(fields.get(i), fields.get(i + 1));
+		}	
+			
 	}
 
 	public ClientCommand getClientCommand() { return clientCommand; }
