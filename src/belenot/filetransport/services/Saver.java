@@ -4,7 +4,6 @@ import belenot.filetransport.*;
 import java.util.stream.*;
 import java.util.function.*;
 
-
 public class Saver implements Function<ClientQuery, ServerResponse> {
 	public ServerResponse apply(ClientQuery clientQuery) {
 		System.out.println("Save function:");
