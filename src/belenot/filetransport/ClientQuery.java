@@ -16,7 +16,7 @@ public class ClientQuery {
 
 	public ClientCommand getClientCommand() { return clientCommand; }
 
-	public Map<String, String> getData() { return data; }
+	public Map<String, int[]> getData() { return data; }
 
 	private ClientCommand clientCommand;
 	private Map<String, int[]> data = new HashMap<>();
