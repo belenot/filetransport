@@ -8,9 +8,10 @@ public class Saver implements Function<ClientQuery, ServerResponse> {
 	public ServerResponse apply(ClientQuery clientQuery) {
 		System.out.println("Save function:");
 		System.out.println("\tcommand: " + clientQuery.getClientCommand());
-		clientQuery.getData().keySet().
+		clientQuery.getHeaders().keySet().
 			stream().
-			forEach((k) -> System.out.println("\t" + k + ":" + clientQuery.getData().get(k)));
+			forEach((k) -> System.out.println("\t" + k + ":" + clientQuery.getHeaders().get(k)));
+		System.out.println("Content:\n" + new String(clientQuery.getData()));
 		return null;
 	}
 }

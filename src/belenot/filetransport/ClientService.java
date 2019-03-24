@@ -28,9 +28,9 @@ public class ClientService implements Runnable {
 	public void run () {
 		System.out.println("Run: " + socket.toString());
 		try {
-			ClientQuery query = new ClientQuery(socket.getInputStream());
+			ClientQuery query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
 			serv(query);
-		} catch (IOException exc) {
+		} catch (IOException | ClassNotFoundException exc) {
 			System.err.println("Error while reading stream:\n" + exc);
 		} catch (IllegalArgumentException exc) {
 			System.err.println("Wrong argumment:\n" + exc);
