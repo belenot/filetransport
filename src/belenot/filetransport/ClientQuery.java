@@ -14,6 +14,7 @@ public class ClientQuery implements Serializable {
 
 	public Map<String, String> getHeaders() { return headers; }
 	public byte[] getData() { return data; }
+	public ClientQuery setData(byte[] bytes) {data = bytes; return this; }
 
 	private ClientCommand clientCommand;
 	private Map<String, String> headers = new HashMap<>();
