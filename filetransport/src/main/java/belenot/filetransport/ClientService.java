@@ -13,7 +13,8 @@ public class ClientService implements Runnable {
 		socket = s;
 	}
 
-	public void serv(ClientQuery clientQuery) throws IllegalArgumentException {
+    private ServerResponse serv(ClientQuery clientQuery) throws IllegalArgumentException {
+		if (clientQuery == null) throw new NullPointerException("clientQuery is null");
 		ClientCommand clientCommand = clientQuery.getClientCommand();
 		ServerResponse serverResponse = null;
 		System.out.println("Command is " + clientCommand);
@@ -27,26 +28,28 @@ public class ClientService implements Runnable {
 		}
 		if (function != null)
 			serverResponse = function.apply(clientQuery);
-		try {
-			(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
-		} catch (IOException exc) {
-			System.err.println("Can't response to client:\n" + exc);
-		}
+		return serverResponse;
 	}
 
 
 	@Override
 	public void run () {
 		System.out.println("Run: " + socket.toString());
+		ClientQuery query = null;
+		ServerResponse response = null;
 		try {
-			ClientQuery query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
-			serv(query);
+			query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
 		} catch (IOException | ClassNotFoundException exc) {
 			System.err.println("Error while reading stream:\n" + exc);
 		} catch (IllegalArgumentException exc) {
 			System.err.println("Wrong argumment:\n" + exc);
 		}
-		finally {
+		try {
+			ServerResponse serverResponse = serv(query);
+			(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
+		} catch (IOException | NullPointerException exc) {
+			System.err.println("Can't response to client:\n" + exc);
+		} finally {
 			try {
 				socket.close();
 			} catch (IOException exc) {
