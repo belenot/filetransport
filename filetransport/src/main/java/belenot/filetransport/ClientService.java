@@ -45,7 +45,9 @@ public class ClientService implements Runnable {
 			System.err.println("Wrong argumment:\n" + exc);
 		}
 		try {
+			System.out.println(query);
 			ServerResponse serverResponse = serv(query);
+			System.out.println(query + "\n" + serverResponse);
 			(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
 		} catch (IOException | NullPointerException exc) {
 			System.err.println("Can't response to client:\n" + exc);

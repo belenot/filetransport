@@ -11,6 +11,7 @@ public class Client {
 			switch (strCommand) {
 			case "LOAD": clientQuery = newLoadQuery(args[0]); break;
 			case "SAVE": clientQuery = newSaveQuery(args[0], args[1]); break;
+			case "LISTTREE": clientQuery = newListTreeQuery(args[0]); break;
 			default: System.err.println("UnknownCommand");
 			}
 			if (clientQuery == null) return null;
@@ -42,7 +43,12 @@ public class Client {
 		clientQuery.getHeaders().put("filename", filename);
 		return clientQuery;
 	}
-			
+
+	public static ClientQuery newListTreeQuery(String filename) {
+		ClientQuery clientQuery = new ClientQuery(ClientCommand.LISTTREE);
+		clientQuery.getHeaders().put("filename", filename);
+		return clientQuery;
+	}
 	
 	public static void main(String[] args) {
 		ServerResponse serverResponse = write(args[0], Arrays.copyOfRange(args, 1, args.length));

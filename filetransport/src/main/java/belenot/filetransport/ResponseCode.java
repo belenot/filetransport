@@ -1,5 +1,5 @@
 package belenot.filetransport;
 
 public enum ResponseCode {
-	ALLOW, DENY;
+	ALLOW, DENY, ERROR;
 }

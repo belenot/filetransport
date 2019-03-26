@@ -3,7 +3,7 @@ package belenot.filetransport;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-
+// Можно сделать абстрактным, и реализацию для каждого метода
 public class ClientQuery implements Serializable {
 	public ClientQuery() { }
 	public ClientQuery(ClientCommand command) {
