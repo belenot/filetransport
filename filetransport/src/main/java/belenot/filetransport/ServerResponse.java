@@ -15,6 +15,6 @@ public class ServerResponse implements Serializable {
 	public void setData(byte[] bytes) { data = bytes; }
 
 	private ResponseCode responseCode;
-	private Map<String, String> headers;
+	private Map<String, String> headers = new HashMap<>();
 	private byte[] data;
 }
