@@ -23,6 +23,7 @@ public class ClientService implements Runnable {
 		case SAVE: function = new Saver(); break;
 		case LOAD: function = new Loader(); break;
 		case LISTTREE: function = new ListTree(); break;
+		case STOP: function = (query) -> new ServerResponse(ResponseCode.ALLOW); break;
 		default:
 			throw new IllegalArgumentException("Unsupported command: " + clientQuery.getClientCommand());
 		}
@@ -38,23 +39,33 @@ public class ClientService implements Runnable {
 		ClientQuery query = null;
 		ServerResponse response = null;
 		try {
-			query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
-		} catch (IOException | ClassNotFoundException exc) {
-			System.err.println("Error while reading stream:\n" + exc);
-		} catch (IllegalArgumentException exc) {
-			System.err.println("Wrong argumment:\n" + exc);
+			do {
+				query = null;
+				try {
+					query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
+				}
+				catch (IOException | ClassNotFoundException exc) {
+					System.err.println("Error while reading stream:\n" + exc);
+				}
+				catch (IllegalArgumentException exc) {
+					System.err.println("Wrong argumment:\n" + exc);
+				}
+				try {
+					System.out.println(query);
+					ServerResponse serverResponse = serv(query);
+					System.out.println(query + "\n" + serverResponse);
+					(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
+				}
+				catch (IOException | NullPointerException exc) {
+					System.err.println("Can't response to client:\n" + exc);
+				}
+			} while(query != null && query.getClientCommand() != ClientCommand.STOP);
 		}
-		try {
-			System.out.println(query);
-			ServerResponse serverResponse = serv(query);
-			System.out.println(query + "\n" + serverResponse);
-			(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
-		} catch (IOException | NullPointerException exc) {
-			System.err.println("Can't response to client:\n" + exc);
-		} finally {
+		finally {
 			try {
 				socket.close();
-			} catch (IOException exc) {
+			}
+			catch (IOException exc) {
 				System.err.println("Error to close socket:\n" + exc);
 			}
 		}

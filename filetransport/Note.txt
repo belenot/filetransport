@@ -1,0 +1,6 @@
+Need start vm with listening debugger on port like this:
+  java -agentlib:jdwp=transport=dt_socket,address={PORT},server={Y/n}suspend={Y/n}
+Then check if gud-jdb-use-classpath is nill, otherwise set it nill
+Althought, I don't sure enough it make sense, but just in case)
+Then write M-x jdb RET
+jdb -attach {PORT} "-sourcepath {SOURCEPATH}"
