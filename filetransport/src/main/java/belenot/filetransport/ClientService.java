@@ -6,7 +6,10 @@ import java.net.*;
 import java.io.*;
 import belenot.filetransport.services.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ClientService implements Runnable {
+	private static final int MAX_LENGTH = 2048;
 	private Socket socket;
 	
 	ClientService (Socket s) {
@@ -42,10 +45,16 @@ public class ClientService implements Runnable {
 			do {
 				query = null;
 				try {
-					query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
+					//query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
+					byte[] bytes = new byte[MAX_LENGTH];
+					socket.getInputStream().read(bytes);
+					ObjectMapper objectMapper = new ObjectMapper();
+					query = (ClientQuery) objectMapper.readValue(bytes, ClientQuery.class);
+					
 				}
-				catch (IOException | ClassNotFoundException exc) {
+				catch (IOException exc) {
 					System.err.println("Error while reading stream:\n" + exc);
+					exc.printStackTrace();
 				}
 				catch (IllegalArgumentException exc) {
 					System.err.println("Wrong argumment:\n" + exc);
@@ -54,7 +63,11 @@ public class ClientService implements Runnable {
 					System.out.println(query);
 					ServerResponse serverResponse = serv(query);
 					System.out.println(query + "\n" + serverResponse);
-					(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
+					//(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
+					ObjectMapper objectMapper = new ObjectMapper();
+					ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+					objectMapper.writeValue(byteStream, serverResponse);
+					socket.getOutputStream().write(byteStream.toByteArray());
 				}
 				catch (IOException | NullPointerException exc) {
 					System.err.println("Can't response to client:\n" + exc);

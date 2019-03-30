@@ -3,12 +3,9 @@ package belenot.filetransport;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Client {
-	public static ServerResponse write(String strCommand,String[] args) {
-	
-		return null;
-	}
 		
 	public static ClientQuery newSaveQuery (String filename, String newFilename)
 		throws IOException, FileNotFoundException{
@@ -57,14 +54,17 @@ public class Client {
 				}
 				if (clientQuery != null) {
 					try {
-						(new ObjectOutputStream(socket.getOutputStream())).writeObject(clientQuery);
-					    serverResponse = (ServerResponse) (new ObjectInputStream(socket.getInputStream())).readObject();
-					}
-					catch (ClassNotFoundException exc) {
-						System.err.println("Can't resolve server response");
+						//(new ObjectOutputStream(socket.getOutputStream())).writeObject(clientQuery);
+					    //serverResponse = (ServerResponse) (new ObjectInputStream(socket.getInputStream())).readObject();
+						ObjectMapper objectMapper = new ObjectMapper();
+						ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+						objectMapper.writeValue(byteStream, clientQuery);
+						socket.getOutputStream().write(byteStream.toByteArray());
+						serverResponse = (ServerResponse) objectMapper.readValue(socket.getInputStream(), ServerResponse.class);
 					}
 					catch (IOException exc) {
 						System.err.println("Can't connect to server:\n" + exc);
+						exc.printStackTrace();
 					}
 					System.out.println(serverResponse.getResponseCode());
 					if (serverResponse.getData() != null)
