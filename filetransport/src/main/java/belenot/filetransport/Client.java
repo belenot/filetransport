@@ -36,6 +36,13 @@ public class Client {
 	public static ClientQuery newStopQuery() {
 		return new ClientQuery(ClientCommand.STOP);
 	}
+
+	public static ClientQuery newMkDirQuery(String dirname) {
+		ClientQuery clientQuery = new ClientQuery(ClientCommand.MKDIR);
+		clientQuery.getHeaders().put("dirname", dirname);
+		return clientQuery;
+	}
+		
 	
 	public static void main(String[] args) {
 		ServerResponse serverResponse = null;
@@ -52,6 +59,7 @@ public class Client {
 				case "LOAD": clientQuery = newLoadQuery(args[1]); break;
 				case "SAVE": clientQuery = newSaveQuery(args[1], args[2]); break;
 				case "LISTTREE": clientQuery = newListTreeQuery(args[1]); break;
+				case "MKDIR": clientQuery = newMkDirQuery(args[1]); break;
 				case "STOP": clientQuery = newStopQuery(); break;
 				default: System.err.println("UnknownCommand");
 				}
