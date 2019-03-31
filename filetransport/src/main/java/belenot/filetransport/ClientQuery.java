@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
-public class ClientQuery implements Externalizable {
+public class ClientQuery implements Bytesalizable<ClientQuery> {
 	public ClientQuery() { }
 	public ClientQuery(ClientCommand command) {
 		clientCommand = command;

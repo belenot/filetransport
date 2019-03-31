@@ -41,13 +41,14 @@ public class ServerResponse implements Externalizable {
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-		String str = responseCode.toString() + "\n" + headers.size() + "\n";
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		bytes.write((responseCode.toString() + "\n" + headers.size() + "\n").getBytes());
+		//String str = responseCode.toString() + "\n" + headers.size() + "\n";
 		for(Map.Entry<String, String> entry : headers.entrySet())
-			str += entry.getKey() + ":" + entry.getValue() + "\n";
-	    out.write(str.getBytes(), 0, str.getBytes().length);
+		    bytes.write((entry.getKey() + ":" + entry.getValue() + "\n").getBytes());
 		if (data != null && data.length > 0)
-			out.write(data, 0, data.length);
-		out.flush();
+			bytes.write(data, 0, data.length);
+		out.write(bytes.toByteArray());
 	}
 		
 

@@ -4,3 +4,11 @@ Then check if gud-jdb-use-classpath is nill, otherwise set it nill
 Althought, I don't sure enough it make sense, but just in case)
 Then write M-x jdb RET
 jdb -attach {PORT} "-sourcepath {SOURCEPATH}"
+
+
+LISTREE works wrong
+
+Maybe error in encoding?
+
+ObjectOutput holds only 1024 bytes, so java's serialization isn't propreated.
+Remake with own serializer interface Bytesalizer
