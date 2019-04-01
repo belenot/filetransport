@@ -43,9 +43,14 @@ public class ClientService implements Runnable {
 			do {
 				query = null;
 				try {
-					query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
+				    byte firstByte = (byte) socket.getInputStream().read();
+					byte[] bytes = new byte[socket.getInputStream().available() + 1];
+					bytes[0] = firstByte;
+					socket.getInputStream().read(bytes, 1, bytes.length - 1);
+					query = (new ClientQuery()).fillObject(bytes);
+					//query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
 				}
-				catch (IOException | ClassNotFoundException exc) {
+				catch (IOException exc) {
 					System.err.println("Error while reading stream:\n" + exc);
 				}
 				catch (IllegalArgumentException exc) {
@@ -55,7 +60,8 @@ public class ClientService implements Runnable {
 					System.out.println(query);
 					ServerResponse serverResponse = serv(query);
 					System.out.println(query + "\n" + serverResponse);
-					(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
+					socket.getOutputStream().write(serverResponse.getBytes());
+					//(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
 				}
 				catch (IOException | NullPointerException exc) {
 					System.err.println("Can't response to client:\n" + exc);

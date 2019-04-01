@@ -65,11 +65,15 @@ public class Client {
 				}
 				if (clientQuery != null) {
 					try {
-						(new ObjectOutputStream(socket.getOutputStream())).writeObject(clientQuery);
-					    serverResponse = (ServerResponse) (new ObjectInputStream(socket.getInputStream())).readObject();
-					}
-					catch (ClassNotFoundException exc) {
-						System.err.println("Can't resolve server response");
+						socket.getOutputStream().write(clientQuery.getBytes());
+						//(new ObjectOutputStream(socket.getOutputStream())).writeObject(clientQuery);
+					    byte firstByte = (byte) socket.getInputStream().read();
+						byte[] bytes = new byte[socket.getInputStream().available() + 1];
+						bytes[0] = firstByte;
+						socket.getInputStream().read(bytes, 1, bytes.length - 1);
+						serverResponse = (new ServerResponse()).fillObject(bytes);
+																		   
+					    //serverResponse = (ServerResponse) (new ObjectInputStream(socket.getInputStream())).readObject();
 					}
 					catch (IOException exc) {
 						System.err.println("Can't connect to server:\n" + exc);

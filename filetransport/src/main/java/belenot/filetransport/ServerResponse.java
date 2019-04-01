@@ -2,8 +2,9 @@ package belenot.filetransport;
 
 import java.util.*;
 import java.io.*;
+import belenot.filetransport.util.Bytesalizable;
 
-public class ServerResponse implements Externalizable {
+public class ServerResponse implements Bytesalizable<ServerResponse> {
 	public ServerResponse() { }
 	public ServerResponse(ResponseCode code) {
 		responseCode = code;
@@ -15,10 +16,11 @@ public class ServerResponse implements Externalizable {
 	public void setData(byte[] bytes) { data = bytes; }
 
 	@Override
-	public void readExternal(ObjectInput in) throws IOException{
+	public ServerResponse fillObject(byte[] bytes) throws IOException, IllegalArgumentException{
 		String str = "";
 		int b;
 		int headerCount = 0;
+		ByteArrayInputStream in = new ByteArrayInputStream(bytes);
 		while( (b = in.read()) != -1 && b != '\n') str += (char) b;
 		try {
 			responseCode = ResponseCode.valueOf(str);
@@ -37,18 +39,19 @@ public class ServerResponse implements Externalizable {
 		}
 		data = new byte[in.available()];
 		in.read(data);
+		return this;
 	}
 
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		bytes.write((responseCode.toString() + "\n" + headers.size() + "\n").getBytes());
+	public byte[] getBytes() throws IOException, IllegalStateException {
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		byteStream.write((responseCode.toString() + "\n" + headers.size() + "\n").getBytes());
 		//String str = responseCode.toString() + "\n" + headers.size() + "\n";
 		for(Map.Entry<String, String> entry : headers.entrySet())
-		    bytes.write((entry.getKey() + ":" + entry.getValue() + "\n").getBytes());
+		    byteStream.write((entry.getKey() + ":" + entry.getValue() + "\n").getBytes());
 		if (data != null && data.length > 0)
-			bytes.write(data, 0, data.length);
-		out.write(bytes.toByteArray());
+			byteStream.write(data, 0, data.length);
+		return byteStream.toByteArray();
 	}
 		
 
