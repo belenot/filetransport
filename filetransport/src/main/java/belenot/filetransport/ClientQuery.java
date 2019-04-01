@@ -3,6 +3,7 @@ package belenot.filetransport;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
+import belenot.filetransport.util.Bytesalizable;
 
 public class ClientQuery implements Bytesalizable<ClientQuery> {
 	public ClientQuery() { }
@@ -19,11 +20,12 @@ public class ClientQuery implements Bytesalizable<ClientQuery> {
 	public byte[] getData() { return data; }
 	public ClientQuery setData(byte[] bytes) {data = bytes; return this; }
 
-		@Override
-	public void readExternal(ObjectInput in) throws IOException{
+	@Override
+	public ClientQuery fillObject(byte[] bytes) throws IOException, IllegalArgumentException{
 		String str = "";
 		int b;
 		int headerCount = 0;
+		ByteArrayInputStream in = new ByteArrayInputStream(bytes);
 		while( (b = in.read()) != -1 && b != '\n') str += (char) b;
 		try {
 		    clientCommand = ClientCommand.valueOf(str);
@@ -42,17 +44,19 @@ public class ClientQuery implements Bytesalizable<ClientQuery> {
 		}	
 		data = new byte[in.available()];
 		in.read(data);
+		return this;
 	}
 
 	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
+	public byte[] getBytes() throws IOException, IllegalStateException {
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		String str = clientCommand.toString() + "\n" + headers.size() + "\n";
 		for(Map.Entry<String, String> entry : headers.entrySet())
 			str += entry.getKey() + ":" + entry.getValue() + "\n";
-	    out.write(str.getBytes(), 0, str.getBytes().length);
+	    byteStream.write(str.getBytes(), 0, str.getBytes().length);
 		if (data != null && data.length > 0)
-			out.write(data, 0, data.length);
-		out.flush();
+			byteStream.write(data, 0, data.length);
+		return byteStream.toByteArray();
 	}
 
 	private ClientCommand clientCommand;
