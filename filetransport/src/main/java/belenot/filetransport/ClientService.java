@@ -24,6 +24,7 @@ public class ClientService implements Runnable {
 		case LOAD: function = new Loader(); break;
 		case LISTTREE: function = new ListTree(); break;
 		case MKDIR: function = new MkDir(); break;
+		case DELETTER: function = new Deletter(); break;
 		case STOP: function = (query) -> new ServerResponse(ResponseCode.ALLOW); break;
 		default:
 			throw new IllegalArgumentException("Unsupported command: " + clientQuery.getClientCommand());

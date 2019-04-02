@@ -42,6 +42,12 @@ public class Client {
 		clientQuery.getHeaders().put("dirname", dirname);
 		return clientQuery;
 	}
+
+	public static ClientQuery newDeleteQuery(String deleteFilename) {
+		ClientQuery clientQuery = new ClientQuery(ClientCommand.DELETTER);
+		clientQuery.getHeaders().put("filename", deleteFilename);
+		return clientQuery;
+	}
 		
 	
 	public static void main(String[] args) {
@@ -60,6 +66,7 @@ public class Client {
 				case "SAVE": clientQuery = newSaveQuery(args[1], args[2]); break;
 				case "LISTTREE": clientQuery = newListTreeQuery(args[1]); break;
 				case "MKDIR": clientQuery = newMkDirQuery(args[1]); break;
+				case "DELETE": clientQuery = newDeleteQuery(args[1]); break;
 				case "STOP": clientQuery = newStopQuery(); break;
 				default: System.err.println("UnknownCommand");
 				}

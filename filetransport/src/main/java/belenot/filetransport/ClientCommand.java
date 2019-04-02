@@ -1,7 +1,7 @@
 package belenot.filetransport;
 
 public enum ClientCommand {
-	SAVE, MKDIR, LOAD, DELETE, LISTTREE, STOP;
+	SAVE, MKDIR, LOAD, DELETTER, LISTTREE, STOP;
 	
 	@Deprecated
 	public static int maxLength() {
