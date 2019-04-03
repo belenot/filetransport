@@ -2,8 +2,10 @@ package belenot.filetransport;
 
 import java.io.*;
 import java.util.*;
+import belenot.filetransport.util.logging.*;
 
 class CommandReader implements Runnable {
+	private ServerLogger logger = new ServerLogger();
 	
 	public CommandReader(Command command) {
 		this.command = command;
@@ -26,9 +28,11 @@ class CommandReader implements Runnable {
 					break;
 				}
 			} catch (IllegalArgumentException | NullPointerException exc) {
-				System.err.println("Incorrect command!");
+				//System.err.println("Incorrect command!");
+				logger.warning("Incorrect command!");
 			} catch (IOException exc) {
-				System.err.println("Error durring read command!");
+				//System.err.println("Error durring read command!");
+				logger.warning("Error durring read command!");
 			} 
 		}
 	}

@@ -3,8 +3,10 @@ package belenot.filetransport;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import belenot.filetransport.util.logging.*;
 
 public class Client {
+	static private ServerLogger logger = new ServerLogger();
 	public static ServerResponse write(String strCommand,String[] args) {
 	
 		return null;
@@ -68,7 +70,8 @@ public class Client {
 				case "MKDIR": clientQuery = newMkDirQuery(args[1]); break;
 				case "DELETE": clientQuery = newDeleteQuery(args[1]); break;
 				case "STOP": clientQuery = newStopQuery(); break;
-				default: System.err.println("UnknownCommand");
+				default: //System.err.println("UnknownCommand");
+					logger.warning("UnknownCommand");
 				}
 				if (clientQuery != null) {
 					try {

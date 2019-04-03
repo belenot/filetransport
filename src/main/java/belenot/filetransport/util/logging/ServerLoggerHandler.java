@@ -35,7 +35,7 @@ public class ServerLoggerHandler extends Handler {
 	@Override
 	public void publish(LogRecord record) {
 		try {
-			out.write( (record.getMessage() + "\n").getBytes());
+			out.write( ("[WARNING]" + record.getMessage() + "\n").getBytes());
 		}
 		catch (IOException exc) {
 			/*What I shall do?*/

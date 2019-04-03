@@ -4,10 +4,12 @@ import java.util.concurrent.*;
 import java.net.*;
 import java.io.*;
 import java.time.*;
-
+import belenot.filetransport.util.logging.*;
 
 public class Server
 	implements Runnable, CommandEventListener {
+	private ServerLogger logger = new ServerLogger();
+	
 	private static int SERVER_SOCKET_PORT = 5678;
 
 	private int serverSocketPort = SERVER_SOCKET_PORT;
@@ -29,7 +31,8 @@ public class Server
 		try {
 			init();
 		} catch (IOException | IllegalStateException exc) {
-			System.err.println("Error initialize:\n" + exc);
+			//System.err.println("Error initialize:\n" + exc);
+			logger.warning("Error initialize:\n" + exc);
 			return null;
 		}
 		Thread thread = new Thread(this);
@@ -52,7 +55,8 @@ public class Server
 			}
 			close();
 		} catch (IOException exc) {
-			System.out.println("Socket error while run server:\n" + exc);
+			//System.err.println("Socket error while run server:\n" + exc);
+			logger.warning("Socket error while run server:\n" + exc);
 		}
 	}
 
@@ -77,7 +81,8 @@ public class Server
 			executorService.shutdown();
 			serverSocket.close();
 		} catch (Exception exc) {
-			System.out.println("Exception while closing server:\n");
+			//System.err.println("Exception while closing server:\n");
+			logger.warning("Exception while closing server:\n");
 		}
 		System.out.println("Server was successfuly closed");
 	}

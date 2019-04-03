@@ -5,9 +5,11 @@ import java.util.function.*;
 import java.net.*;
 import java.io.*;
 import belenot.filetransport.services.*;
+import belenot.filetransport.util.logging.*;
 
 public class ClientService implements Runnable {
 	private Socket socket;
+	private ServerLogger logger = new ServerLogger();
 	
 	ClientService (Socket s) {
 		socket = s;
@@ -52,10 +54,12 @@ public class ClientService implements Runnable {
 					//query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
 				}
 				catch (IOException exc) {
-					System.err.println("Error while reading stream:\n" + exc);
+					//System.err.println("Error while reading stream:\n" + exc);
+					logger.warning("Error while reading stream:\n" + exc);
 				}
 				catch (IllegalArgumentException exc) {
-					System.err.println("Wrong argumment:\n" + exc);
+					//System.err.println("Wrong argumment:\n" + exc);
+					logger.warning("Wrong argumment:\n" + exc);
 				}
 				try {
 					System.out.println(query);
@@ -65,7 +69,8 @@ public class ClientService implements Runnable {
 					//(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
 				}
 				catch (IOException | NullPointerException exc) {
-					System.err.println("Can't response to client:\n" + exc);
+					//System.err.println("Can't response to client:\n" + exc);
+					logger.warning("Can't response to client:\n" + exc);
 				}
 			} while(query != null && query.getClientCommand() != ClientCommand.STOP);
 		}
@@ -74,7 +79,8 @@ public class ClientService implements Runnable {
 				socket.close();
 			}
 			catch (IOException exc) {
-				System.err.println("Error to close socket:\n" + exc);
+				//System.err.println("Error to close socket:\n" + exc);
+				logger.warning("Error to close socket:\n" + exc);
 			}
 		}
 	}
