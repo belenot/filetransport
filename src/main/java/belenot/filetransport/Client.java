@@ -3,6 +3,7 @@ package belenot.filetransport;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 import belenot.filetransport.util.logging.*;
 
 public class Client {
@@ -71,7 +72,7 @@ public class Client {
 				case "DELETE": clientQuery = newDeleteQuery(args[1]); break;
 				case "STOP": clientQuery = newStopQuery(); break;
 				default: //System.err.println("UnknownCommand");
-					logger.warning("UnknownCommand");
+					logger.log(Level.WARNING, "UnknownCommand");
 				}
 				if (clientQuery != null) {
 					try {

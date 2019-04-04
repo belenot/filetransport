@@ -2,6 +2,7 @@ package belenot.filetransport;
 
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 import java.net.*;
 import java.io.*;
 import belenot.filetransport.services.*;
@@ -19,7 +20,8 @@ public class ClientService implements Runnable {
 		if (clientQuery == null) throw new NullPointerException("clientQuery is null");
 		ClientCommand clientCommand = clientQuery.getClientCommand();
 		ServerResponse serverResponse = null;
-		System.out.println("Command is " + clientCommand);
+		//System.out.println("Command is " + clientCommand);
+		logger.log(Level.INFO, "Command is " + clientCommand);
 		Function<ClientQuery, ServerResponse> function = null;
 		switch (clientQuery.getClientCommand()) {
 		case SAVE: function = new Saver(); break;
@@ -39,7 +41,8 @@ public class ClientService implements Runnable {
 
 	@Override
 	public void run () {
-		System.out.println("Run: " + socket.toString());
+		//System.out.println("Run: " + socket.toString());
+		logger.log(Level.INFO, "Run: " + socket.toString());
 		ClientQuery query = null;
 		ServerResponse response = null;
 		try {
@@ -55,22 +58,19 @@ public class ClientService implements Runnable {
 				}
 				catch (IOException exc) {
 					//System.err.println("Error while reading stream:\n" + exc);
-					logger.warning("Error while reading stream:\n" + exc);
+					logger.log(Level.WARNING, "Error while reading stream:\n" + exc);
 				}
 				catch (IllegalArgumentException exc) {
 					//System.err.println("Wrong argumment:\n" + exc);
-					logger.warning("Wrong argumment:\n" + exc);
+					logger.log(Level.WARNING, "Wrong argumment:\n" + exc);
 				}
 				try {
-					System.out.println(query);
 					ServerResponse serverResponse = serv(query);
-					System.out.println(query + "\n" + serverResponse);
 					socket.getOutputStream().write(serverResponse.getBytes());
-					//(new ObjectOutputStream(socket.getOutputStream())).writeObject(serverResponse);
 				}
 				catch (IOException | NullPointerException exc) {
 					//System.err.println("Can't response to client:\n" + exc);
-					logger.warning("Can't response to client:\n" + exc);
+					logger.log(Level.WARNING, "Can't response to client:\n" + exc);
 				}
 			} while(query != null && query.getClientCommand() != ClientCommand.STOP);
 		}
@@ -80,7 +80,7 @@ public class ClientService implements Runnable {
 			}
 			catch (IOException exc) {
 				//System.err.println("Error to close socket:\n" + exc);
-				logger.warning("Error to close socket:\n" + exc);
+				logger.log(Level.WARNING, "Error to close socket:\n" + exc);
 			}
 		}
 	}

@@ -1,21 +1,25 @@
 package belenot.filetransport.services;
 
 import belenot.filetransport.*;
+import belenot.filetransport.util.logging.*;
 import java.util.stream.*;
 import java.util.function.*;
+import java.util.logging.*;
 import java.io.*;
 
 public class Loader implements Function<ClientQuery, ServerResponse> {
+	Logger logger = new ServerLogger();
 	public ServerResponse apply(ClientQuery clientQuery) {
 		ServerResponse serverResponse = null;
 		try {
 			String filename = clientQuery.getHeaders().get("filename");
-			System.out.println("Filename: " + filename);
+			//System.out.println("Filename: " + filename);
+			logger.log(Level.INFO, "Filename: " + filename);
 			byte[] data = load(filename);
-			System.out.println("Data: " + data);
+			//System.out.println("Data: " + data);
+			logger.log(Level.INFO, "Data: " + data);
 			serverResponse = new ServerResponse(ResponseCode.ALLOW);
 			serverResponse.setData(data);
-			System.out.println(data);
 			return serverResponse;
 		} catch (IOException | NullPointerException exc) {
 			serverResponse = new ServerResponse(ResponseCode.DENY);

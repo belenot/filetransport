@@ -1,12 +1,17 @@
 package belenot.filetransport.services;
 
 import belenot.filetransport.*;
+import belenot.filetransport.util.logging.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.*;
 import java.nio.file.*;
 import java.io.*;
 
+
+
 public class MkDir implements Function<ClientQuery, ServerResponse> {
+	Logger logger = new ServerLogger();
 	@Override
 	public ServerResponse apply(ClientQuery clientQuery) {
 		ServerResponse serverResponse = null;
@@ -23,7 +28,8 @@ public class MkDir implements Function<ClientQuery, ServerResponse> {
 
 	private void mkdir(String dirname)
 		throws FileAlreadyExistsException, IOException, SecurityException {
-		System.out.println("Stud: try to mkdir");
+		//System.out.println("Stub: try to mkdir");
+		logger.log(Level.INFO, "Stub: try to mkdir");
 		Path dirPath = Paths.get(dirname);
 		Files.createDirectory(dirPath);
 	}

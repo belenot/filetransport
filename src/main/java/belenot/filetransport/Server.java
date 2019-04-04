@@ -1,6 +1,7 @@
 package belenot.filetransport;
 
 import java.util.concurrent.*;
+import java.util.logging.*;
 import java.net.*;
 import java.io.*;
 import java.time.*;
@@ -26,13 +27,14 @@ public class Server
 	}
 
 	public Thread start() {
-		System.out.println("Start server");
+		//System.out.println("Start server");
+		logger.log(Level.INFO, "Start server");
 		if (isStart) return null;
 		try {
 			init();
 		} catch (IOException | IllegalStateException exc) {
 			//System.err.println("Error initialize:\n" + exc);
-			logger.warning("Error initialize:\n" + exc);
+			logger.log(Level.WARNING, "Error initialize:\n" + exc);
 			return null;
 		}
 		Thread thread = new Thread(this);
@@ -45,7 +47,8 @@ public class Server
 
 	@Override
 	public void run() {
-		System.out.println("Run server");
+		//System.out.println("Run server");
+		logger.log(Level.INFO, "Run server");
 		try {
 			while(!command.equals(Command.CLOSE)) {
 				try {
@@ -56,7 +59,7 @@ public class Server
 			close();
 		} catch (IOException exc) {
 			//System.err.println("Socket error while run server:\n" + exc);
-			logger.warning("Socket error while run server:\n" + exc);
+			logger.log(Level.WARNING, "Socket error while run server:\n" + exc);
 		}
 	}
 
@@ -76,15 +79,17 @@ public class Server
 	}
 
 	protected void close() throws IOException {
-		System.out.println("Close server...");
+		//System.out.println("Close server...");
+		logger.log(Level.INFO, "Close server...");
 		try {
 			executorService.shutdown();
 			serverSocket.close();
 		} catch (Exception exc) {
 			//System.err.println("Exception while closing server:\n");
-			logger.warning("Exception while closing server:\n");
+			logger.log(Level.WARNING, "Exception while closing server:\n");
 		}
-		System.out.println("Server was successfuly closed");
+		//System.out.println("Server was successfuly closed");
+		logger.log(Level.INFO, "Server was successfuly closed");
 	}
 
 	
