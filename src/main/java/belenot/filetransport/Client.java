@@ -8,56 +8,37 @@ import belenot.filetransport.util.logging.*;
 
 public class Client {
 	static private ServerLogger logger = new ServerLogger();
+	static private String hostname = "";
+	static private int port = -1;
 	public static ServerResponse write(String strCommand,String[] args) {
 	
 		return null;
 	}
-		
-	public static ClientQuery newSaveQuery (String filename, String newFilename)
-		throws IOException, FileNotFoundException{
-		FileInputStream in = new FileInputStream(filename);
-		byte[] data = new byte[in.available()];
-		in.read(data);
-		ClientQuery clientQuery = new ClientQuery(ClientCommand.SAVE.toString());
-		clientQuery.getHeaders().put("filename", newFilename);
-		clientQuery.setData(data);
-		return clientQuery;
-	}
 
-	public static ClientQuery newLoadQuery(String filename) {
-		ClientQuery clientQuery = new ClientQuery(ClientCommand.LOAD);
-		clientQuery.getHeaders().put("filename", filename);
-		return clientQuery;
-	}
-
-	public static ClientQuery newListTreeQuery(String filename) {
-		ClientQuery clientQuery = new ClientQuery(ClientCommand.LISTTREE);
-		clientQuery.getHeaders().put("filename", filename);
-		return clientQuery;
-	}
-
-	public static ClientQuery newStopQuery() {
-		return new ClientQuery(ClientCommand.STOP);
-	}
-
-	public static ClientQuery newMkDirQuery(String dirname) {
-		ClientQuery clientQuery = new ClientQuery(ClientCommand.MKDIR);
-		clientQuery.getHeaders().put("dirname", dirname);
-		return clientQuery;
-	}
-
-	public static ClientQuery newDeleteQuery(String deleteFilename) {
-		ClientQuery clientQuery = new ClientQuery(ClientCommand.DELETTER);
-		clientQuery.getHeaders().put("filename", deleteFilename);
-		return clientQuery;
+	private static void config() throws IllegalStateException {
+		try {
+			System.out.print("<hostname>:<port>#:>");
+			String inputBuffer = new BufferedReader(new InputStreamReader(System.in)).readLine();
+		    hostname = inputBuffer.split(":")[0];
+		    port = Integer.parseInt(inputBuffer.split(":")[1]);
+		} catch (Exception exc) {
+			throw new IllegalStateException("Config error", exc);
+		}
 	}
 		
 	
 	public static void main(String[] args) {
+		System.out.println("Start filetransport client:");
+		try {
+			config();
+		} catch(IllegalStateException exc) {
+			logger.log(Level.WARNING, exc.toString());
+			return;
+		}
 		ServerResponse serverResponse = null;
 		ClientQuery clientQuery = null;
 		boolean stop = false;
-		try (Socket socket = new Socket("localhost", 5678)){
+		try (Socket socket = new Socket(hostname, port)){
 			do {
 				serverResponse = null;
 				clientQuery = null;
@@ -65,12 +46,12 @@ public class Client {
 				args = (new BufferedReader(new InputStreamReader(System.in))).readLine().split(" ");
 				stop = args[0].equals("STOP") ? true : false;
 				switch (args[0]) {
-				case "LOAD": clientQuery = newLoadQuery(args[1]); break;
-				case "SAVE": clientQuery = newSaveQuery(args[1], args[2]); break;
-				case "LISTTREE": clientQuery = newListTreeQuery(args[1]); break;
-				case "MKDIR": clientQuery = newMkDirQuery(args[1]); break;
-				case "DELETE": clientQuery = newDeleteQuery(args[1]); break;
-				case "STOP": clientQuery = newStopQuery(); break;
+				case "LOAD": clientQuery = ClientHelper.newLoadQuery(args[1]); break;
+				case "SAVE": clientQuery = ClientHelper.newSaveQuery(args[1], args[2]); break;
+				case "LISTTREE": clientQuery = ClientHelper.newListTreeQuery(args[1]); break;
+				case "MKDIR": clientQuery = ClientHelper.newMkDirQuery(args[1]); break;
+				case "DELETE": clientQuery = ClientHelper.newDeleteQuery(args[1]); break;
+				case "STOP": clientQuery = ClientHelper.newStopQuery(); break;
 				default: //System.err.println("UnknownCommand");
 					logger.log(Level.WARNING, "UnknownCommand");
 				}
