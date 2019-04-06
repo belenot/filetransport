@@ -4,6 +4,7 @@ import belenot.filetransport.*;
 import java.util.stream.*;
 import java.util.function.*;
 import java.io.*;
+import java.nio.file.*;
 
 public class Saver implements Function<ClientQuery, ServerResponse> {
 	public ServerResponse apply(ClientQuery clientQuery) {
@@ -21,6 +22,11 @@ public class Saver implements Function<ClientQuery, ServerResponse> {
 
 	private void saveData(String filename, byte[] data)
 		throws FileNotFoundException, IOException{
+		Path file = Paths.get(filename).toAbsolutePath();
+		Path parent = file.getParent().toAbsolutePath();
+		if (parent != null && !Files.isDirectory(parent)) {
+		    Files.createDirectories(parent);
+		}
 		FileOutputStream out = new FileOutputStream(new File(filename));
 		out.write(data);
 		out.close();
