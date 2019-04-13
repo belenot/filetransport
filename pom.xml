@@ -16,8 +16,32 @@
   </properties>
 
   <modules>
+	<!--
 	<module>filetransport-server</module>
 	<module>filetransport-client</module>
+	-->
 	<module>filetransport-message</module>
   </modules>
+
+  <profiles>
+	<profile>
+	  <id>client</id>
+	  <modules>
+		<module>filetransport-client</module>
+	  </modules>
+	</profile>
+	<profile>
+	  <id>server</id>
+	  <modules>
+		<module>filetransport-server</module>
+	  </modules>
+	</profile>
+	<profile>
+	  <id>filetransport-overall</id>
+	  <modules>
+		<module>filetransport-client</module>
+		<module>filetransport-server</module>
+	  </modules>
+	</profile>
+  </profiles>
 </project>
