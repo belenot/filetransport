@@ -1,0 +1,20 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+	<groupId>com.belenot.filetransport</groupId>
+	<artifactId>filetransport-parent</artifactId>
+	<version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>filetransport-client</artifactId>
+
+  <dependencies>
+	<dependency>
+	  <groupId>com.belenot.filetransport</groupId>
+	  <artifactId>filetransport-message</artifactId>
+	  <version>1.0-SNAPSHOT</version>
+	</dependency>
+  </dependencies>
+
+</project>
