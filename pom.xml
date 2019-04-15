@@ -9,6 +9,7 @@
   
   <packaging>pom</packaging>
   
+  
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<maven.compiler.source>1.8</maven.compiler.source>
@@ -16,32 +17,76 @@
   </properties>
 
   <modules>
-	<!--
-	<module>filetransport-server</module>
-	<module>filetransport-client</module>
-	-->
 	<module>filetransport-message</module>
   </modules>
 
   <profiles>
 	<profile>
 	  <id>client</id>
+	  <properties>
+		<filetransport.mainClass>com.belenot.filetransport.Client</filetransport.mainClass>
+		<filetransport.finalName>filetransport-client</filetransport.finalName>
+	  </properties>
 	  <modules>
 		<module>filetransport-client</module>
 	  </modules>
 	</profile>
+	
 	<profile>
 	  <id>server</id>
+	  <properties>
+		<filetransport.mainClass>com.belenot.filetransport.Server</filetransport.mainClass>
+		<filetransport.finalName>filetransport-server</filetransport.finalName>
+	  </properties>
 	  <modules>
 		<module>filetransport-server</module>
 	  </modules>
 	</profile>
+	
 	<profile>
-	  <id>filetransport-overall</id>
+	  <id>overall</id>
+	  <activation>
+		<activeByDefault>true</activeByDefault>
+	  </activation>
 	  <modules>
 		<module>filetransport-client</module>
 		<module>filetransport-server</module>
 	  </modules>
+	  <properties>
+		<filetransport.finalName>filetransport-overall</filetransport.finalName>
+	  </properties>
 	</profile>
   </profiles>
+
+  <build>
+	<plugins>
+	  <plugin>
+		<artifactId>maven-assembly-plugin</artifactId>
+		<version>3.1.1</version>
+		<executions>
+		  <execution>
+			<id>create-executable-jar</id>
+			<phase>package</phase>
+			<goals>
+			  <goal>single</goal>
+			</goals>
+			<configuration>
+			  <finalName>${filetransport.finalName}</finalName>
+			  <descriptorRefs>
+				<descriptorRef>
+				  jar-with-dependencies
+				</descriptorRef>
+			  </descriptorRefs>
+			  <archive>
+				<manifest>
+				  <mainClass>${filetransport.mainClass}</mainClass>
+				</manifest>
+			  </archive>
+			</configuration>
+		  </execution>
+		</executions>
+	  </plugin>
+	</plugins>
+  </build>
+  
 </project>
