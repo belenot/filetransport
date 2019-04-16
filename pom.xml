@@ -31,7 +31,6 @@
 		<module>filetransport-client</module>
 	  </modules>
 	</profile>
-	
 	<profile>
 	  <id>server</id>
 	  <properties>
@@ -41,8 +40,7 @@
 	  <modules>
 		<module>filetransport-server</module>
 	  </modules>
-	</profile>
-	
+	</profile>	
 	<profile>
 	  <id>overall</id>
 	  <activation>
@@ -88,5 +86,4 @@
 	  </plugin>
 	</plugins>
   </build>
-  
 </project>
