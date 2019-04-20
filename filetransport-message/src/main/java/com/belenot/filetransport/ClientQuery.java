@@ -37,6 +37,7 @@ public class ClientQuery implements Bytesalizable<ClientQuery> {
 		} catch (NumberFormatException exc) { throw new IOException(exc); }
 		str = "";
 		for(int i = 0; i < headerCount; i++) {
+			str = "";
 			while( (b = in.read()) != -1 && b != '\n') str += (char) b;
 			String key = str.split(":")[0];
 			String value = str.split(":")[1];

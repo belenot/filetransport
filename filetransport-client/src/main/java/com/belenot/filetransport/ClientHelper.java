@@ -38,9 +38,11 @@ public class ClientHelper {
 		return clientQuery;
 	}
 
-	public static ClientQuery newDeleteQuery(String deleteFilename) {
+	public static ClientQuery newDeleteQuery(String deleteFilename, String recursive) {
+		recursive = recursive == null ? "false"  : recursive;
 		ClientQuery clientQuery = new ClientQuery(ClientCommand.DELETTER);
 		clientQuery.getHeaders().put("filename", deleteFilename);
+		clientQuery.getHeaders().put("recursive", recursive.toString());
 		return clientQuery;
 	}
 }

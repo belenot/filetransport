@@ -1,3 +1,4 @@
-*~
-target
-mvn.log
+/*
+!/**/src
+!/**/pom.xml
+!/.gitignore

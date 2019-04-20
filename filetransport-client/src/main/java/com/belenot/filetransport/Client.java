@@ -47,7 +47,7 @@ public class Client {
 				case "SAVE": clientQuery = ClientHelper.newSaveQuery(args[1], args[2]); break;
 				case "LISTTREE": clientQuery = ClientHelper.newListTreeQuery(args[1]); break;
 				case "MKDIR": clientQuery = ClientHelper.newMkDirQuery(args[1]); break;
-				case "DELETE": clientQuery = ClientHelper.newDeleteQuery(args[1]); break;
+				case "DELETE": clientQuery = ClientHelper.newDeleteQuery(args[1], args.length < 3 ? null : args[2]); break;
 				case "STOP": clientQuery = ClientHelper.newStopQuery(); break;
 				default: //System.err.println("UnknownCommand");
 					System.err.println("UnknownCommand");
