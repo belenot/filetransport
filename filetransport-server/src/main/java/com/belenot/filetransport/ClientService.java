@@ -25,7 +25,6 @@ public class ClientService implements Runnable {
 	if (clientQuery == null) throw new NullPointerException("clientQuery is null");
 	ClientCommand clientCommand = clientQuery.getClientCommand();
 	ServerResponse serverResponse = null;
-	//System.out.println("Command is " + clientCommand);
 	serverLogger.log(Level.INFO, "Command is " + clientCommand);
 	Function<ClientQuery, ServerResponse> function = null;
 	switch (clientQuery.getClientCommand()) {
@@ -43,10 +42,8 @@ public class ClientService implements Runnable {
 	return serverResponse;
     }
 
-
     @Override
     public void run () {
-	//System.out.println("Run: " + socket.toString());
 	serverLogger.log(Level.INFO, "Run: " + socket.toString());
 	ClientQuery query = null;
 	try {
@@ -58,14 +55,11 @@ public class ClientService implements Runnable {
 		    bytes[0] = firstByte;
 		    socket.getInputStream().read(bytes, 1, bytes.length - 1);
 		    query = (new ClientQuery()).fillObject(bytes);
-		    //query = (ClientQuery) new ObjectInputStream(socket.getInputStream()).readObject();
 		}
 		catch (IOException exc) {
-		    //System.err.println("Error while reading stream:\n" + exc);
 		    serverLogger.log(Level.WARNING, "Error while reading stream:\n" + exc);
 		}
 		catch (IllegalArgumentException exc) {
-		    //System.err.println("Wrong argumment:\n" + exc);
 		    serverLogger.log(Level.WARNING, "Wrong argumment:\n" + exc);
 		}
 		try {
@@ -73,7 +67,6 @@ public class ClientService implements Runnable {
 		    socket.getOutputStream().write(serverResponse.getBytes());
 		}
 		catch (IOException | NullPointerException exc) {
-		    //System.err.println("Can't response to client:\n" + exc);
 		    serverLogger.log(Level.WARNING, "Can't response to client:\n" + exc);
 		}
 	    } while(query != null && query.getClientCommand() != ClientCommand.STOP);
@@ -83,7 +76,6 @@ public class ClientService implements Runnable {
 		socket.close();
 	    }
 	    catch (IOException exc) {
-		//System.err.println("Error to close socket:\n" + exc);
 		serverLogger.log(Level.WARNING, "Error to close socket:\n" + exc);
 	    }
 	}

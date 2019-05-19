@@ -27,8 +27,8 @@ public class ServerConfig {
 	server.setLogger(logger());
 	server.setServerSocket(serverSocket());
 	server.setSoTimeout(1000);
+	server.setClientServiceFactory(clientServiceFactory());
 	server.setExecutorService(executorService());
-	
 	return server;
     }
 
@@ -70,6 +70,12 @@ public class ServerConfig {
 	return commandReader;
     }
 
+    @Bean
+    public ClientServiceFactory clientServiceFactory() {
+	ClientServiceFactory clientServiceFactory = new ClientServiceFactory();
+	clientServiceFactory.setServerLogger(logger());
+	return clientServiceFactory;
+    }
     
     
 }

@@ -10,11 +10,16 @@ import com.belenot.filetransport.util.logging.ServerLogger;
 
 public class Server
     implements Runnable, CommandEventListener {
-
+    
     private ServerLogger logger;
     public void setLogger(ServerLogger logger) { this.logger = logger; }
 
+    private ClientServiceFactory clientServiceFactory;
+    public void setClientServiceFactory(ClientServiceFactory clientServiceFactory) { this.clientServiceFactory = clientServiceFactory; }
+
     private int soTimeout;
+
+
     public void setSoTimeout(int soTimeout) { this.soTimeout = soTimeout; }
 
     
@@ -51,8 +56,7 @@ public class Server
 		try {
 		    Socket clientSocket = serverSocket.accept();
 		    //Here need to add prototype scope with proxy, but i don't know how, yet :(
-		    ClientService clientService = new ClientService(clientSocket);
-		    clientService.setServerLogger(logger);
+		    ClientService clientService = clientServiceFactory.newClientService(clientSocket);
 		    executorService.submit(clientService);
 		} catch (SocketTimeoutException exc) { }
 	    }
