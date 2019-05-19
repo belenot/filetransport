@@ -1,103 +1,92 @@
 package com.belenot.filetransport;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
 
-import java.util.concurrent.*;
-import java.util.logging.*;
-import java.net.*;
-import java.io.*;
-import java.time.*;
-import com.belenot.filetransport.util.logging.*;
+import com.belenot.filetransport.util.logging.ServerLogger;
 
 public class Server
-	implements Runnable, CommandEventListener {
-	private ServerLogger logger = new ServerLogger();
-	
-	private static int SERVER_SOCKET_PORT = 5678;
+    implements Runnable, CommandEventListener {
 
-	private int serverSocketPort = SERVER_SOCKET_PORT;
-	private int SO_TIMEOUT = 1000;
+    private ServerLogger logger;
+    public void setLogger(ServerLogger logger) { this.logger = logger; }
+
+    private int soTimeout;
+    public void setSoTimeout(int soTimeout) { this.soTimeout = soTimeout; }
+
+    
+    private ExecutorService executorService;
+    public void setExecutorService(ExecutorService executorService) { this.executorService = executorService; }
+    private ServerSocket serverSocket;
+    public void setServerSocket(ServerSocket serverSocket) { this.serverSocket = serverSocket; }
 	
-	private ExecutorService executorService;
-	private ServerSocket serverSocket;
+    private boolean isStart = false;
+    private Command command = Command.NORMAL_RUN;
 	
-	private boolean isStart = false;
-	private Command command;
-	
-	public Server() {
-		//Config
+    public Server() {
+	//Config
+    }
+
+    public void start() {
+	logger.log(Level.INFO, "Start server");
+	if (isStart) return;
+	try {
+	    serverSocket.setSoTimeout(soTimeout);
+	} catch (IOException | IllegalStateException exc) {
+	    logger.log(Level.WARNING, "Error initialize:\n" + exc);
+	    return;
 	}
+	Thread thread = new Thread(this);
+	thread.start();
+    }
 
-	public Thread start() {
-		//System.out.println("Start server");
-		logger.log(Level.INFO, "Start server");
-		if (isStart) return null;
+    @Override
+    public void run() {
+	logger.log(Level.INFO, "Run server");
+	try {
+	    while(!command.equals(Command.CLOSE)) {
 		try {
-			init();
-		} catch (IOException | IllegalStateException exc) {
-			//System.err.println("Error initialize:\n" + exc);
-			logger.log(Level.WARNING, "Error initialize:\n" + exc);
-			return null;
-		}
-		Thread thread = new Thread(this);
-		thread.start();
-		CommandReader commandReader = new CommandReader(command);
-		commandReader.addCommandEventListener(this);
-		(new Thread(commandReader)).start();
-		return thread;
+		    Socket clientSocket = serverSocket.accept();
+		    //Here need to add prototype scope with proxy, but i don't know how, yet :(
+		    ClientService clientService = new ClientService(clientSocket);
+		    clientService.setServerLogger(logger);
+		    executorService.submit(clientService);
+		} catch (SocketTimeoutException exc) { }
+	    }
+	    close();
+	} catch (IOException exc) {
+	    logger.log(Level.WARNING, "Socket error while run server:\n" + exc);
 	}
+    }
 
-	@Override
-	public void run() {
-		//System.out.println("Run server");
-		logger.log(Level.INFO, "Run server");
-		try {
-			while(!command.equals(Command.CLOSE)) {
-				try {
-					Socket clientSocket = serverSocket.accept();
-					executorService.submit(new ClientService(clientSocket));
-				} catch (SocketTimeoutException exc) { }
-			}
-			close();
-		} catch (IOException exc) {
-			//System.err.println("Socket error while run server:\n" + exc);
-			logger.log(Level.WARNING, "Socket error while run server:\n" + exc);
-		}
+    @Override
+    public void occur(CommandEvent event) {
+	command = (Command) event.getSource();
+    }
+
+    protected void close() throws IOException{
+	//System.out.println("Close server...");
+	logger.log(Level.INFO, "Close server...");
+	try {
+	    executorService.shutdown();
+	    serverSocket.close();
+	} catch (Exception exc) {
+	    //System.err.println("Exception while closing server:\n");
+	    logger.log(Level.WARNING, "Exception while closing server:\n");
 	}
-
-	@Override
-	public void occur(CommandEvent event) {
-		command = (Command) event.getSource();
-	}
-
-
-	protected void init() throws IOException {
-		executorService = Executors.newCachedThreadPool();
-		serverSocket = new ServerSocket(serverSocketPort);
-		serverSocket.setSoTimeout(SO_TIMEOUT);
-		command = Command.NORMAL_RUN;
-		if (executorService == null || serverSocket == null)
-			throw new IllegalStateException();
-	}
-
-	protected void close() throws IOException {
-		//System.out.println("Close server...");
-		logger.log(Level.INFO, "Close server...");
-		try {
-			executorService.shutdown();
-			serverSocket.close();
-		} catch (Exception exc) {
-			//System.err.println("Exception while closing server:\n");
-			logger.log(Level.WARNING, "Exception while closing server:\n");
-		}
-		//System.out.println("Server was successfuly closed");
-		logger.log(Level.INFO, "Server was successfuly closed");
-	}
+	//System.out.println("Server was successfuly closed");
+	logger.log(Level.INFO, "Server was successfuly closed");
+    }
 
 	
 	
-	public static void main(String[] args) {
-		Server server = new Server();
-		server.start();
-	}
+    public static void main(String[] args) {
+	Server server = new Server();
+	server.start();
+    }
 		
 }
 	

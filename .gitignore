@@ -1,4 +1,7 @@
 /*
-!/**/src
-!/**/pom.xml
-!/.gitignore
+!/filetransport-*/
+/filetransport-*/*
+!/filetransport-*/src
+!**/pom.xml
+!.gitignore
+/**/workbench.xmi
