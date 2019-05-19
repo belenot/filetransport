@@ -61,9 +61,7 @@ public class Client {
 			byte[] bytes = new byte[socket.getInputStream().available() + 1];
 			bytes[0] = firstByte;
 			socket.getInputStream().read(bytes, 1, bytes.length - 1);
-			serverResponse = (new ServerResponse()).fillObject(bytes);
-																		   
-			//serverResponse = (ServerResponse) (new ObjectInputStream(socket.getInputStream())).readObject();
+			serverResponse = (new ServerResponse()).fillObject(bytes)
 		    }
 		    catch (IOException exc) {
 			System.err.println("Can't connect to server:\n" + exc);
