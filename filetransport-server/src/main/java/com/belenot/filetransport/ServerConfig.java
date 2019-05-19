@@ -77,9 +77,6 @@ public class ServerConfig {
     public CommandReader commandReader() {
 	CommandReader commandReader = new CommandReader();
 	commandReader.setInputStream(stdin());
-	Set<CommandEventListener> listeners = new HashSet<>();
-	listeners.add(server());
-	commandReader.setListeners(listeners);
 	return commandReader;
     }
 

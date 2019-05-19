@@ -1,4 +1,5 @@
 package com.belenot.filetransport;
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -6,10 +7,16 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+
 import com.belenot.filetransport.util.logging.ServerLogger;
 
 public class Server
-    implements Runnable, CommandEventListener {
+    implements Runnable, ApplicationListener<CommandEvent> {
+    @Autowired
+    private ApplicationContext applicationContext;
     
     private ServerLogger logger;
     public void setLogger(ServerLogger logger) { this.logger = logger; }
@@ -67,7 +74,7 @@ public class Server
     }
 
     @Override
-    public void occur(CommandEvent event) {
+    public void onApplicationEvent(CommandEvent event) {
 	command = (Command) event.getSource();
     }
 
@@ -77,6 +84,9 @@ public class Server
 	try {
 	    executorService.shutdown();
 	    serverSocket.close();
+	    if (applicationContext instanceof Closeable) {
+		((Closeable) applicationContext).close();
+	    }
 	} catch (Exception exc) {
 	    //System.err.println("Exception while closing server:\n");
 	    logger.log(Level.WARNING, "Exception while closing server:\n");

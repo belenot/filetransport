@@ -8,15 +8,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.ApplicationEventPublisher;
+
 import com.belenot.filetransport.util.logging.ServerLogger;
 
-class CommandReader implements Runnable {
+class CommandReader implements Runnable, ApplicationEventPublisherAware {
     private ServerLogger serverLogger;
     public void setServerLogger(ServerLogger serverLogger) { this.serverLogger = serverLogger; }
-    private Set<CommandEventListener> listeners = new HashSet<>();
-    public void setListeners(Set<CommandEventListener> listeners) { this.listeners = listeners; }
     private InputStream inputStream;
     public void setInputStream(InputStream inputStream) { this.inputStream = inputStream; }
+    private ApplicationEventPublisher publisher;
+    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) { this.publisher = publisher; }
 	
     private boolean isClosed = false;
     private Command command;
@@ -27,10 +30,6 @@ class CommandReader implements Runnable {
     
     public CommandReader(Command command) {
 	this.command = command;
-    }
-
-    public void addCommandEventListener(CommandEventListener listener) {
-	listeners.add(listener);
     }
 
     public void init() {
@@ -60,9 +59,7 @@ class CommandReader implements Runnable {
     }
 
     private void fire(CommandEvent event) {
-	for (CommandEventListener listener : listeners) {
-	    listener.occur(event);
-	}
+	publisher.publishEvent(event);
     }
 }
 			
