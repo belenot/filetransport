@@ -1,32 +1,44 @@
 package com.belenot.filetransport;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import com.belenot.filetransport.util.logging.ServerLogger;
 import com.belenot.filetransport.util.logging.ServerLoggerHandler;
 
 @Configurable
+@PropertySource( "classpath:/server.properties" )
 public class ServerConfig {
+    private static int DEFAULT_SO_TIMEOUT = 1000;
+    private static int DEFAULT_SERVERSOCKET_PORT = 5678;
+    @Autowired
+    Environment env;
+    
     public static void main(String[] args) {
-	ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);	
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
     }
-
+    
     @Bean( initMethod = "start" )
     public Server server() {
 	Server server = new Server();
+	int soTimeout = env.getProperty("server.soTimeout", Integer.class, DEFAULT_SO_TIMEOUT);
 	server.setLogger(logger());
 	server.setServerSocket(serverSocket());
-	server.setSoTimeout(1000);
+	server.setSoTimeout(soTimeout);
 	server.setClientServiceFactory(clientServiceFactory());
 	server.setExecutorService(executorService());
 	return server;
@@ -41,7 +53,7 @@ public class ServerConfig {
 
     @Bean
     public ServerLoggerHandler serverLoggerHandler() {
-	return new ServerLoggerHandler(System.err);
+	return new ServerLoggerHandler(stderr());
     }
 
     @Bean
@@ -52,8 +64,9 @@ public class ServerConfig {
 
     @Bean
     public ServerSocket serverSocket() {
+	int serverSocketPort = env.getProperty("server.serverSocketPort", Integer.class, DEFAULT_SERVERSOCKET_PORT);
 	try {
-	    ServerSocket serverSocket = new ServerSocket(5678);
+	    ServerSocket serverSocket = new ServerSocket(serverSocketPort);
 	    return serverSocket;
 	} catch (IOException exc) {
 	    return null;
@@ -63,7 +76,7 @@ public class ServerConfig {
     @Bean( initMethod="init" )
     public CommandReader commandReader() {
 	CommandReader commandReader = new CommandReader();
-	commandReader.setInputStream(System.in);
+	commandReader.setInputStream(stdin());
 	Set<CommandEventListener> listeners = new HashSet<>();
 	listeners.add(server());
 	commandReader.setListeners(listeners);
@@ -76,6 +89,17 @@ public class ServerConfig {
 	clientServiceFactory.setServerLogger(logger());
 	return clientServiceFactory;
     }
-    
+
+    /**
+       in server.properties would be URLs to stdin stdout and stderr streams.
+       need to read that url. if no given, state for default(System.in/out/err)
+       if url not correct, state for default
+     */
+    @Bean
+    public InputStream stdin() { return System.in; }
+    @Bean
+    public OutputStream stdout() { return System.out; }
+    @Bean
+    public OutputStream stderr() { return System.err; }
     
 }
