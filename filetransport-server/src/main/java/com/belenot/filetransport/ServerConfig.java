@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -29,7 +28,8 @@ public class ServerConfig {
     Environment env;
     
     public static void main(String[] args) {
-        ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
+        //ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
+	ApplicationContext ctx = new ClassPathXmlApplicationContext("ServerConfig.xml");
     }
     
     @Bean( initMethod = "start" )

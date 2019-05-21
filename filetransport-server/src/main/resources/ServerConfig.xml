@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			   http://www.springframework.org/schema/beans/spring-beans.xsd"
+       >
+
+  <bean id="server" class="com.belenot.filetransport.Server" init-method="start">
+    <property name="logger" ref="logger"/>
+    <property name="serverSocket" ref="serverSocket"/>
+    <!-- add property value from file -->
+    <property name="soTimeout" value="1000"/>
+    <property name="clientServiceFactory" ref="clientServiceFactory"/>
+    <property name="executorService" ref="executorService"/>
+  </bean>
+  <bean id="logger" class="com.belenot.filetransport.util.logging.ServerLogger">
+    <!-- add property value from file -->
+    <constructor-arg index="0" value="serverLogger.name"/>
+    <constructor-arg index="1"><null/></constructor-arg>
+    <constructor-arg index="2" ref="serverLoggerHandler"/>
+  </bean>
+  <bean id="serverLoggerHandler" class="com.belenot.filetransport.util.logging.ServerLoggerHandler">
+    <constructor-arg ref="stderr"/>
+  </bean>
+  <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+  <!-- catch exception -->
+  <bean id="serverSocket" class="java.net.ServerSocket">
+    <!-- add property value from file -->
+    <constructor-arg value="5678"/>
+  </bean>
+  <bean id="commandReader" class="com.belenot.filetransport.CommandReader" init-method="init">
+    <property name="inputStream" ref="stdin"/>
+  </bean>
+  <bean id="clientServiceFactory" class="com.belenot.filetransport.ClientServiceFactory">
+    <property name="serverLogger" ref="logger"/>
+  </bean>
+
+  <!-- is there other more pleasantly way for referencing bean to field of static class?  -->
+  <bean id="stdin" class="com.belenot.filetransport.StandardStreamFactory" factory-method="stdin"/>
+  <bean id="stdout" class="com.belenot.filetransport.StandardStreamFactory" factory-method="stdout"/>
+  <bean id="stderr" class="com.belenot.filetransport.StandardStreamFactory" factory-method="stderr"/>
+</beans>
+  
+  
