@@ -5,17 +5,23 @@
 			   http://www.springframework.org/schema/beans/spring-beans.xsd"
        >
 
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location">
+      <value>server.properties</value>
+    </property>
+  </bean>
+  
   <bean id="server" class="com.belenot.filetransport.Server" init-method="start">
     <property name="logger" ref="logger"/>
     <property name="serverSocket" ref="serverSocket"/>
     <!-- add property value from file -->
-    <property name="soTimeout" value="1000"/>
+    <property name="soTimeout" value="#{${server.soTimeout}?:'10000'}"/>
     <property name="clientServiceFactory" ref="clientServiceFactory"/>
     <property name="executorService" ref="executorService"/>
   </bean>
   <bean id="logger" class="com.belenot.filetransport.util.logging.ServerLogger">
     <!-- add property value from file -->
-    <constructor-arg index="0" value="serverLogger.name"/>
+    <constructor-arg index="0" value="#{'${serverLogger.name}'?:'ServerLogger'}"/>
     <constructor-arg index="1"><null/></constructor-arg>
     <constructor-arg index="2" ref="serverLoggerHandler"/>
   </bean>
@@ -26,7 +32,7 @@
   <!-- catch exception -->
   <bean id="serverSocket" class="java.net.ServerSocket">
     <!-- add property value from file -->
-    <constructor-arg value="5678"/>
+    <constructor-arg value="${server.serverSocketPort:5678}"/>
   </bean>
   <bean id="commandReader" class="com.belenot.filetransport.CommandReader" init-method="init">
     <property name="inputStream" ref="stdin"/>
