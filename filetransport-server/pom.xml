@@ -25,6 +25,11 @@
       <artifactId>spring-context-support</artifactId>
       <version>${spring.ver}</version>
     </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjtools</artifactId>
+      <version>1.6.2</version>
+    </dependency>
   </dependencies>
 
   <build>

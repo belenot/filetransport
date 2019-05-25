@@ -13,8 +13,7 @@ import org.springframework.context.ApplicationListener;
 
 import com.belenot.filetransport.util.logging.ServerLogger;
 
-public class Server
-    implements Runnable, ApplicationListener<CommandEvent> {
+public class Server implements Startable, Runnable, ApplicationListener<CommandEvent> {
     @Autowired
     private ApplicationContext applicationContext;
     
@@ -79,19 +78,16 @@ public class Server
     }
 
     protected void close() throws IOException{
-	//System.out.println("Close server...");
 	logger.log(Level.INFO, "Close server...");
 	try {
-	    executorService.shutdown();
-	    serverSocket.close();
+	    if (!executorService.isShutdown()) executorService.shutdown();
+	    if (!serverSocket.isClosed()) serverSocket.close();
 	    if (applicationContext instanceof Closeable) {
 		((Closeable) applicationContext).close();
 	    }
 	} catch (Exception exc) {
-	    //System.err.println("Exception while closing server:\n");
 	    logger.log(Level.WARNING, "Exception while closing server:\n");
 	}
-	//System.out.println("Server was successfuly closed");
 	logger.log(Level.INFO, "Server was successfuly closed");
     }
 

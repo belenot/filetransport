@@ -4,12 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 
-import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 
 import com.belenot.filetransport.util.logging.ServerLogger;
 
@@ -20,6 +20,7 @@ class CommandReader implements Runnable, ApplicationEventPublisherAware {
     public void setInputStream(InputStream inputStream) { this.inputStream = inputStream; }
     private ApplicationEventPublisher publisher;
     public void setApplicationEventPublisher(ApplicationEventPublisher publisher) { this.publisher = publisher; }
+    private ApplicationContext ctx;
 	
     private boolean isClosed = false;
     private Command command;
@@ -61,6 +62,10 @@ class CommandReader implements Runnable, ApplicationEventPublisherAware {
     private void fire(CommandEvent event) {
 	publisher.publishEvent(event);
     }
+
+
+
+    
 }
 			
 		

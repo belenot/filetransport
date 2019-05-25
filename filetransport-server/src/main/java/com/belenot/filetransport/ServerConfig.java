@@ -10,29 +10,42 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import com.belenot.filetransport.aspect.ServerAspects;
 import com.belenot.filetransport.util.logging.ServerLogger;
 import com.belenot.filetransport.util.logging.ServerLoggerHandler;
 
 @Configurable
 @PropertySource( "classpath:/server.properties" )
+@EnableAspectJAutoProxy
 public class ServerConfig {
     private static int DEFAULT_SO_TIMEOUT = 1000;
     private static int DEFAULT_SERVERSOCKET_PORT = 5678;
     @Autowired
-    Environment env;
+    private Environment env;
+    @Autowired
+    private ApplicationContext ctx;
     
     public static void main(String[] args) {
-        //ApplicationContext ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
-	ApplicationContext ctx = new ClassPathXmlApplicationContext("ServerConfig.xml");
+	ApplicationContext ctx = null;
+	ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
+	Startable server = (Startable) ctx.getBean("server");
+	server.start();
+	
     }
     
-    @Bean( initMethod = "start" )
+    @Bean
+    public ServerAspects serverAspects() {
+	return new ServerAspects();
+    }
+    
+    @Bean 
     public Server server() {
 	Server server = new Server();
 	int soTimeout = env.getProperty("server.soTimeout", Integer.class, DEFAULT_SO_TIMEOUT);
