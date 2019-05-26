@@ -1,17 +1,31 @@
 package com.belenot.filetransport.aspect;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import java.util.Date;
+import java.util.logging.Level;
+
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.belenot.filetransport.annotation.Nameable;
+import com.belenot.filetransport.util.logging.ServerLogger;
 
 @Aspect
 public class ServerAspects {
-    @Around( "execution(* start())" )
-    public Object startAdvice(ProceedingJoinPoint pjp) throws Throwable {
-	System.out.println("ADVICE START");
-	pjp.proceed();
-	System.out.println("ADVICE END");
+    @Autowired
+    private ServerLogger logger;
+    @Before( "execution(* start(..)) || execution(* run(..))" )
+    public Object startAdvice(JoinPoint jp) throws Throwable {
+	String methodName = jp.getSignature().getName();
+	String typeName = jp.getTarget().getClass().getName();
+	String instanceName = "noname";
+	if (jp.getTarget() instanceof Nameable) {
+	    instanceName = ((Nameable) jp.getTarget()).getName();
+	}
+        String date = (new Date()).toString();
+	String logMessage = String.format("{%s} %s.%s[%s]", date, typeName, methodName, instanceName);
+	logger.log(Level.INFO, logMessage);
 	return null;
     }
 }

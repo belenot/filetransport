@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -35,7 +34,7 @@ public class ServerConfig {
     public static void main(String[] args) {
 	ApplicationContext ctx = null;
 	ctx = new AnnotationConfigApplicationContext(ServerConfig.class);
-	Startable server = (Startable) ctx.getBean("server");
+        Startable server = (Startable) ctx.getBean("server");
 	server.start();
 	
     }
